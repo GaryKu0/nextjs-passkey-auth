@@ -261,9 +261,9 @@ class PasskeyAuthClient {
         }
 
         try {
-            this._log('Getting user profile with token:', this.token ? 'present' : 'missing');
+            this._log('Getting user profile...');
 
-            const profile = await this._request(`${this.baseUrl}/api/auth/me`, {
+            const profile = await this._request(`${this.baseUrl}/api/auth/external`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.token}`
