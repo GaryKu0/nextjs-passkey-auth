@@ -84,6 +84,34 @@ class PasskeyAuthClient {
     }
 
     /**
+     * Check server CAPTCHA configuration before registration
+     * @private
+     */
+    async _checkCaptchaConfig() {
+        try {
+            this._log('Checking server CAPTCHA configuration...');
+            
+            // Make a simple request to check if CAPTCHA is required
+            const response = await this._request(`${this.baseUrl}/api/auth/register-begin`, {
+                method: 'POST',
+                body: JSON.stringify({ username: '__captcha_check__' })
+            });
+            
+            return false; // No CAPTCHA required
+        } catch (error) {
+            // If error message indicates CAPTCHA is required
+            if (error.message && (
+                error.message.includes('CAPTCHA') || 
+                error.message.includes('captcha') ||
+                error.message.includes('verification')
+            )) {
+                return true; // CAPTCHA required
+            }
+            return false; // Other error, assume no CAPTCHA
+        }
+    }
+
+    /**
      * Register a new user with passkey
      * 
      * @param {Object} userData - User registration data
@@ -100,14 +128,18 @@ class PasskeyAuthClient {
             throw new Error('Username is required');
         }
 
-        if (this.enableCaptcha && !capToken) {
-            throw new Error('CAPTCHA token is required when CAPTCHA is enabled');
+        // Pre-check for CAPTCHA requirements if not explicitly disabled
+        if (!this.enableCaptcha && !capToken) {
+            const captchaRequired = await this._checkCaptchaConfig();
+            if (captchaRequired) {
+                throw new Error('Remote registration not supported. CAPTCHA verification is required - please register directly on the server.');
+            }
         }
 
         try {
             this._log('Starting registration for:', username);
 
-            // Step 1: Begin registration
+            // Step 1: Begin registration - check for CAPTCHA requirements
             const requestBody = { username, email, displayName };
             if (this.enableCaptcha && capToken) {
                 requestBody.capToken = capToken;
@@ -117,6 +149,11 @@ class PasskeyAuthClient {
                 method: 'POST',
                 body: JSON.stringify(requestBody)
             });
+
+            // Check if server returned CAPTCHA requirement error
+            if (options.error && options.error.includes('CAPTCHA')) {
+                throw new Error('Remote registration not supported. CAPTCHA is required - please register directly on the server.');
+            }
 
             this._log('Registration options received:', options);
 
@@ -216,12 +253,15 @@ class PasskeyAuthClient {
      * @returns {Promise<Object>} User profile data
      */
     async getProfile() {
+        // Always refresh token from localStorage before checking
+        this.token = localStorage.getItem(this.tokenStorageKey);
+        
         if (!this.token) {
             throw new Error('No authentication token. Please login first.');
         }
 
         try {
-            this._log('Getting user profile...');
+            this._log('Getting user profile with token:', this.token ? 'present' : 'missing');
 
             const profile = await this._request(`${this.baseUrl}/api/auth/me`, {
                 method: 'GET',
@@ -276,6 +316,8 @@ class PasskeyAuthClient {
      * @returns {boolean} True if user has a valid token
      */
     isAuthenticated() {
+        // Always check localStorage for the latest token state
+        this.token = localStorage.getItem(this.tokenStorageKey);
         return !!this.token;
     }
 
@@ -285,6 +327,8 @@ class PasskeyAuthClient {
      * @returns {string|null} Current auth token or null
      */
     getToken() {
+        // Always refresh from localStorage
+        this.token = localStorage.getItem(this.tokenStorageKey);
         return this.token;
     }
 

@@ -122,6 +122,7 @@ export async function POST(request: NextRequest) {
     
     const response = NextResponse.json({
       success: true,
+      token: token, // Include token in response for client-side storage
       user: {
         id: user.id,
         username: user.username,
