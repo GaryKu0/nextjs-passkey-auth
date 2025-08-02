@@ -10,6 +10,14 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_SITE_TITLE || 'Passkey Authentication Demo',
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Secure passwordless authentication using WebAuthn passkeys',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({

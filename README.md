@@ -1,5 +1,11 @@
 # 🔐 Passkey Authentication with Next.js
 
+<div align="center">
+  <img src="public/icon.png" alt="Passkey Authentication Logo" width="120" height="120">
+</div>
+
+<br>
+
 A modern, passwordless authentication system built with Next.js, WebAuthn passkeys, and Supabase. Features bot protection via CAPTCHA and is optimized for deployment on Cloudflare Pages with Edge Runtime compatibility.
 
 ## ✨ Features
