@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
     // Store the challenge in memory (in production, use Redis or database)
     // For now, we'll return it to the client to store temporarily
     return NextResponse.json({
-      options,
-      tempUserId,
+      ...options,
+      tempUserId
     });
   } catch (error) {
     console.error('Registration begin error:', error);

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       generateAuthenticationOptionsConfig(allowCredentials)
     );
 
-    return NextResponse.json({ options });
+    return NextResponse.json(options);
   } catch (error) {
     console.error('Login begin error:', error);
     return NextResponse.json(

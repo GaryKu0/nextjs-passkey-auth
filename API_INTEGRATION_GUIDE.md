@@ -256,6 +256,7 @@ NEXT_PUBLIC_ENABLE_CAPTCHA=false
 ```
 
 When CAPTCHA is disabled:
+
 - The registration API will not require a `capToken` parameter
 - The client-side widget will not be rendered
 - Server-side validation will be skipped automatically
@@ -314,14 +315,15 @@ You can check if CAPTCHA is enabled by examining the environment variables or ma
 
 ```javascript
 // Client-side check
-const isCaptchaEnabled = process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== 'false' && 
-                        process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== 'disabled';
+const isCaptchaEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== "false" &&
+  process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== "disabled";
 
 // Conditional widget setup
 if (isCaptchaEnabled) {
   setupCapEventListeners();
 } else {
-  console.log('CAPTCHA disabled, skipping widget setup');
+  console.log("CAPTCHA disabled, skipping widget setup");
 }
 ```
 
@@ -335,20 +337,21 @@ class PasskeyAuth {
     this.baseUrl = baseUrl;
     this.token = localStorage.getItem("auth_token");
     // Check if CAPTCHA is enabled
-    this.isCaptchaEnabled = process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== 'false' && 
-                           process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== 'disabled';
+    this.isCaptchaEnabled =
+      process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== "false" &&
+      process.env.NEXT_PUBLIC_ENABLE_CAPTCHA !== "disabled";
   }
 
   async register(username, email, displayName, capToken = null) {
     // Validate CAPTCHA token only if CAPTCHA is enabled
     if (this.isCaptchaEnabled && !capToken) {
-      throw new Error('CAPTCHA token is required when CAPTCHA is enabled');
+      throw new Error("CAPTCHA token is required when CAPTCHA is enabled");
     }
 
     try {
       // Step 1: Begin registration
       const requestBody = { username, email, displayName };
-      
+
       // Only include capToken if CAPTCHA is enabled
       if (this.isCaptchaEnabled && capToken) {
         requestBody.capToken = capToken;

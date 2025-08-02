@@ -50,11 +50,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the authentication response
+    const userVerification = process.env.NEXT_PUBLIC_USER_VERIFICATION as 'discouraged' | 'preferred' | 'required' || 'preferred';
+    const requireUserVerification = userVerification === 'required';
+    
     const verification = await verifyAuthenticationResponse({
       response: credential,
       expectedChallenge,
       expectedOrigin: origin,
       expectedRPID: rpID,
+      requireUserVerification,
       credential: {
         id: storedCredential.credential_id,
         publicKey: new Uint8Array(JSON.parse(Buffer.from(storedCredential.credential_public_key.substring(2), 'hex').toString('utf8')).data),

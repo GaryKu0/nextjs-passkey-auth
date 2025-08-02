@@ -5,17 +5,20 @@ This document describes all the customizable environment variables for the Passk
 ## Required Variables
 
 ### Supabase Configuration
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### JWT Configuration
+
 ```env
 JWT_SECRET=your_jwt_secret_key
 ```
 
 ### WebAuthn/Passkey Configuration
+
 ```env
 NEXT_PUBLIC_RP_ID=your_domain.com
 ```
@@ -23,6 +26,7 @@ NEXT_PUBLIC_RP_ID=your_domain.com
 ## Optional Customization Variables
 
 ### App Branding
+
 ```env
 # Main page title (default: "$ passkey-auth --demo")
 NEXT_PUBLIC_APP_TITLE=$ passkey-auth --demo
@@ -41,6 +45,7 @@ NEXT_PUBLIC_SITE_DESCRIPTION=Secure passwordless authentication using WebAuthn p
 ```
 
 ### WebAuthn Configuration
+
 ```env
 # Relying Party name shown to users (default: "Passkey Demo")
 NEXT_PUBLIC_RP_NAME=Passkey Demo
@@ -68,20 +73,24 @@ NEXT_PUBLIC_ATTESTATION_TYPE=none
 ## WebAuthn Settings Explanation
 
 ### Authenticator Attachment
+
 - **platform**: Prefers built-in authenticators (Touch ID, Face ID, Windows Hello)
 - **cross-platform**: Prefers external authenticators (USB security keys, mobile devices)
 
 ### User Verification
+
 - **discouraged**: Won't prompt for PIN/biometrics if not required
 - **preferred**: Will use PIN/biometrics when available, but won't require it
 - **required**: Always requires PIN/biometrics for multi-factor authentication
 
 ### Resident Key
+
 - **discouraged**: Won't use discoverable credentials (saves space on security keys)
 - **preferred**: Will create discoverable credentials when possible (enables usernameless login)
 - **required**: Always creates discoverable credentials
 
 ### Attestation Type
+
 - **none**: No attestation verification (recommended for most use cases)
 - **direct**: Verify authenticator attestation (requires additional setup)
 - **enterprise**: Enterprise attestation verification (for advanced enterprise use)

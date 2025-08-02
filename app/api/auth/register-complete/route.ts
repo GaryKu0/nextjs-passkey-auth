@@ -18,11 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the registration response
+    const userVerification = process.env.NEXT_PUBLIC_USER_VERIFICATION as 'discouraged' | 'preferred' | 'required' || 'preferred';
+    const requireUserVerification = userVerification === 'required';
+    
     const verifyConfig = createVerifyRegistrationConfig(expectedChallenge, origin, rpID);
     const verification = await verifyRegistrationResponse(
       verifyConfig({
         response: credential,
-        requireUserVerification: false,
+        requireUserVerification,
       })
     );
 
