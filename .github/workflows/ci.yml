@@ -26,7 +26,7 @@ jobs:
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
-        version: 8
+        version: 9
         run_install: false
     
     - name: Get pnpm store directory
@@ -43,7 +43,7 @@ jobs:
           ${{ runner.os }}-pnpm-store-
     
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --no-frozen-lockfile
     
     - name: Run ESLint
       run: pnpm run lint
@@ -82,10 +82,10 @@ jobs:
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
-        version: 8
+        version: 9
     
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --no-frozen-lockfile
     
     - name: Run security audit
       run: pnpm audit --audit-level moderate
