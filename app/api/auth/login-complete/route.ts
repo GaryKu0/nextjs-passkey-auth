@@ -53,10 +53,51 @@ export async function POST(request: NextRequest) {
     const userVerification = process.env.NEXT_PUBLIC_USER_VERIFICATION as 'discouraged' | 'preferred' | 'required' || 'preferred';
     const requireUserVerification = userVerification === 'required';
     
+    // Determine the actual origin from the credential's clientDataJSON
+    let actualOrigin = origin; // default fallback
+    
+    try {
+      // Parse the clientDataJSON to get the actual origin
+      const clientDataJSON = JSON.parse(Buffer.from(credential.response.clientDataJSON, 'base64url').toString('utf-8'));
+      const credentialOrigin = clientDataJSON.origin;
+      
+      console.log('Credential origin from clientDataJSON:', credentialOrigin);
+      console.log('Default expected origin:', origin);
+      
+      // Validate that the origin is a subdomain of the RP ID
+      if (credentialOrigin) {
+        try {
+          const originUrl = new URL(credentialOrigin);
+          const originHost = originUrl.hostname;
+          
+          // Accept if origin is exactly the RP ID or a subdomain of RP ID
+          if (originHost === rpID || originHost.endsWith(`.${rpID}`)) {
+            actualOrigin = credentialOrigin;
+            console.log('Using credential origin for verification:', actualOrigin);
+          } else {
+            console.error('Invalid origin - not a subdomain of RP ID:', originHost, 'vs', rpID);
+            return NextResponse.json(
+              { error: 'Invalid origin for this RP ID' },
+              { status: 400 }
+            );
+          }
+        } catch (urlError) {
+          console.error('Invalid origin URL:', credentialOrigin);
+          return NextResponse.json(
+            { error: 'Invalid origin format' },
+            { status: 400 }
+          );
+        }
+      }
+    } catch (parseError) {
+      console.error('Failed to parse clientDataJSON:', parseError);
+      // Continue with default origin as fallback
+    }
+    
     const verification = await verifyAuthenticationResponse({
       response: credential,
       expectedChallenge,
-      expectedOrigin: origin,
+      expectedOrigin: actualOrigin,
       expectedRPID: rpID,
       requireUserVerification,
       credential: {
